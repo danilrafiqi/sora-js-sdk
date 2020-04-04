@@ -68,11 +68,13 @@ function enabledSimulcast(role, video) {
 
     simulcast_pub Chrome o
     simulcast_pub Firefox x
+    simulcast_pub Safari 13.1 o
     simulcast_pub Safari 12.1.1 x
     simulcast_pub Safari 12.1 x
     simulcast_pub Safari 12.0 x
     simulcast_sub Chrome o
     simulcast_sub Firefox o
+    simulcast_pub Safari 13.1 o
     simulcast_sub Safari 12.1.1 o
     simulcast_sub Safari 12.1 o
     simulcast_sub Safari 12.0 o ※H.264 のみ
@@ -84,6 +86,16 @@ function enabledSimulcast(role, video) {
     return false;
   }
   if ((role === 'upstream' || role === 'sendrecv' || role === 'sendonly') && browser() === 'safari') {
+    const appVersion = window.navigator.appVersion.toLowerCase();
+    const versions = /version\/([\d.]+)/.exec(appVersion);
+    if (!versions) {
+      return false;
+    }
+    const version = versions.pop();
+    // version 12.0 以降であれば有効
+    if (13.1 < parseFloat(version)) {
+      return true;
+    }
     return false;
   }
   // TODO(nakai): sendonly, sendrecv を無効にする
