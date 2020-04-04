@@ -92,8 +92,8 @@ function enabledSimulcast(role, video) {
       return false;
     }
     const version = versions.pop();
-    // version 12.0 以降であれば有効
-    if (13.1 < parseFloat(version)) {
+    // version 13.1 以降であれば有効
+    if (13.1 <= parseFloat(version)) {
       return true;
     }
     return false;
