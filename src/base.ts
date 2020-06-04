@@ -222,7 +222,7 @@ export default class ConnectionBase {
           this.update(data);
         } else if (data.type == "re-offer") {
           this.trace("RE-OFFER SDP", data.sdp);
-          this.update(data);
+          this.reAnswer(data);
         } else if (data.type == "ping") {
           if (data.stats) {
             this.getStats().then((stats) => {
@@ -282,7 +282,9 @@ export default class ConnectionBase {
     return;
   }
 
-  protected async setRemoteDescription(message: SignalingOfferMessage | SignalingUpdateMessage): Promise<void> {
+  protected async setRemoteDescription(
+    message: SignalingOfferMessage | SignalingUpdateMessage | SignalingReOfferMessage
+  ): Promise<void> {
     if (!this.pc) {
       return;
     }
@@ -290,7 +292,9 @@ export default class ConnectionBase {
     return;
   }
 
-  protected async createAnswer(message: SignalingOfferMessage | SignalingUpdateMessage): Promise<void> {
+  protected async createAnswer(
+    message: SignalingOfferMessage | SignalingUpdateMessage | SignalingReOfferMessage
+  ): Promise<void> {
     if (!this.pc) {
       return;
     }
