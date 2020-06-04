@@ -65,6 +65,11 @@ export declare type SignalingUpdateMessage = {
     sdp: string;
     encodings?: Encoding[];
 };
+export declare type SignalingReOfferMessage = {
+    type: "re-offer";
+    sdp: string;
+    encodings?: Encoding[];
+};
 export declare type ConnectionOptions = {
     audio?: boolean;
     audioCodecType?: AudioCodecType;

@@ -1,4 +1,4 @@
-import { Callbacks, ConnectionOptions, SignalingOfferMessage, SignalingUpdateMessage } from "./types";
+import { Callbacks, ConnectionOptions, SignalingOfferMessage, SignalingUpdateMessage, SignalingReOfferMessage } from "./types";
 import SoraE2EE from "sora-e2ee";
 export default class ConnectionBase {
     role: string;
@@ -24,13 +24,15 @@ export default class ConnectionBase {
     protected signaling(offer: RTCSessionDescriptionInit): Promise<SignalingOfferMessage>;
     protected createOffer(): Promise<RTCSessionDescriptionInit>;
     protected connectPeerConnection(message: SignalingOfferMessage): Promise<void>;
-    protected setRemoteDescription(message: SignalingOfferMessage | SignalingUpdateMessage): Promise<void>;
-    protected createAnswer(message: SignalingOfferMessage | SignalingUpdateMessage): Promise<void>;
+    protected setRemoteDescription(message: SignalingOfferMessage | SignalingUpdateMessage | SignalingReOfferMessage): Promise<void>;
+    protected createAnswer(message: SignalingOfferMessage | SignalingUpdateMessage | SignalingReOfferMessage): Promise<void>;
     protected sendAnswer(): void;
     protected sendUpdateAnswer(): void;
+    protected sendReAnswer(): void;
     protected onIceCandidate(): Promise<void>;
     protected trace(title: string, message: any): void;
     private update;
+    private reAnswer;
     private setSenderParameters;
     private getStats;
 }

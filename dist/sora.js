@@ -1,7 +1,7 @@
 /**
  * sora-js-sdk
  * WebRTC SFU Sora JavaScript SDK
- * @version: 2020.1.0
+ * @version: 2020.1.0-dev
  * @author: Shiguredo Inc.
  * @license: Apache-2.0
  **/
@@ -97,7 +97,7 @@
           type: "connect",
           // @ts-ignore
           // eslint-disable-next-line @typescript-eslint/camelcase
-          sora_client: `Sora JavaScript SDK ${'2020.1.0'}`,
+          sora_client: `Sora JavaScript SDK ${'2020.1.0-dev'}`,
           environment: window.navigator.userAgent,
           role: role,
           // eslint-disable-next-line @typescript-eslint/camelcase
@@ -446,6 +446,10 @@
                       this.trace("UPDATE SDP", data.sdp);
                       this.update(data);
                   }
+                  else if (data.type == "re-offer") {
+                      this.trace("RE-OFFER SDP", data.sdp);
+                      this.reAnswer(data);
+                  }
                   else if (data.type == "ping") {
                       if (data.stats) {
                           this.getStats().then((stats) => {
@@ -548,6 +552,13 @@
           }
           return;
       }
+      sendReAnswer() {
+          if (this.pc && this.ws && this.pc.localDescription) {
+              this.trace("RE-ANSWER SDP", this.pc.localDescription.sdp);
+              this.ws.send(JSON.stringify({ type: "re-answer", sdp: this.pc.localDescription.sdp }));
+          }
+          return;
+      }
       onIceCandidate() {
           return new Promise((resolve, reject) => {
               const timerId = setInterval(() => {
@@ -592,6 +603,11 @@
           trace(this.clientId, title, message);
       }
       async update(message) {
+          await this.setRemoteDescription(message);
+          await this.createAnswer(message);
+          this.sendUpdateAnswer();
+      }
+      async reAnswer(message) {
           await this.setRemoteDescription(message);
           await this.createAnswer(message);
           this.sendUpdateAnswer();
@@ -885,7 +901,7 @@
       },
       version: function () {
           // @ts-ignore
-          return '2020.1.0';
+          return '2020.1.0-dev';
       },
   };
 
