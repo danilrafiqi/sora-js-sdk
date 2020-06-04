@@ -1,5 +1,12 @@
 import { createSignalingMessage, trace, isSafari } from "./utils";
-import { Callbacks, ConnectionOptions, Encoding, SignalingOfferMessage, SignalingUpdateMessage } from "./types";
+import {
+  Callbacks,
+  ConnectionOptions,
+  Encoding,
+  SignalingOfferMessage,
+  SignalingUpdateMessage,
+  SignalingReOfferMessage,
+} from "./types";
 import SoraE2EE from "sora-e2ee";
 
 // Override from @type/WebRTC
@@ -213,6 +220,9 @@ export default class ConnectionBase {
         } else if (data.type == "update") {
           this.trace("UPDATE SDP", data.sdp);
           this.update(data);
+        } else if (data.type == "re-offer") {
+          this.trace("RE-OFFER SDP", data.sdp);
+          this.update(data);
         } else if (data.type == "ping") {
           if (data.stats) {
             this.getStats().then((stats) => {
@@ -321,6 +331,14 @@ export default class ConnectionBase {
     return;
   }
 
+  protected sendReAnswer(): void {
+    if (this.pc && this.ws && this.pc.localDescription) {
+      this.trace("RE-ANSWER SDP", this.pc.localDescription.sdp);
+      this.ws.send(JSON.stringify({ type: "re-answer", sdp: this.pc.localDescription.sdp }));
+    }
+    return;
+  }
+
   protected onIceCandidate(): Promise<void> {
     return new Promise((resolve, reject) => {
       const timerId = setInterval(() => {
@@ -364,6 +382,12 @@ export default class ConnectionBase {
   }
 
   private async update(message: SignalingUpdateMessage): Promise<void> {
+    await this.setRemoteDescription(message);
+    await this.createAnswer(message);
+    this.sendUpdateAnswer();
+  }
+
+  private async reAnswer(message: SignalingReOfferMessage): Promise<void> {
     await this.setRemoteDescription(message);
     await this.createAnswer(message);
     this.sendUpdateAnswer();

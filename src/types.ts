@@ -78,6 +78,12 @@ export type SignalingUpdateMessage = {
   encodings?: Encoding[];
 };
 
+export type SignalingReOfferMessage = {
+  type: "re-offer";
+  sdp: string;
+  encodings?: Encoding[];
+};
+
 export type ConnectionOptions = {
   audio?: boolean;
   audioCodecType?: AudioCodecType;
